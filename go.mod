@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/spf13/cobra v1.1.1
 	k8s.io/api v0.21.9
+	k8s.io/apimachinery v0.21.9
 	k8s.io/apiserver v0.21.9
 	k8s.io/client-go v0.21.9
 	k8s.io/component-base v0.21.9
@@ -71,7 +72,6 @@ require (
 	google.golang.org/protobuf v1.26.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	k8s.io/apimachinery v0.21.9 // indirect
 	k8s.io/kube-openapi v0.0.0-20211110012726-3cc51fd1e909 // indirect
 	k8s.io/utils v0.0.0-20210521133846-da695404a2bc // indirect
 	sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.0.27 // indirect

@@ -9,7 +9,7 @@ COPY go.sum .
 COPY Makefile .
 
 # Copy sources inside the docker
-#COPY pkg/ pkg/
+COPY pkg/ pkg/
 COPY cmd/ cmd/
 
 # install the dependencies

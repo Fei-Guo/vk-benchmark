@@ -18,6 +18,7 @@ import (
 
 	benchconfig "github.com/vk-benchmark/cmd/benchmark/app/config"
 	"github.com/vk-benchmark/cmd/benchmark/app/options"
+	"github.com/vk-benchmark/pkg/benchmark"
 )
 
 func NewBenchmarkCommand(stopChan <-chan struct{}) *cobra.Command {
@@ -71,17 +72,11 @@ func NewBenchmarkCommand(stopChan <-chan struct{}) *cobra.Command {
 }
 
 func Run(cc *benchconfig.CompletedConfig, stopCh <-chan struct{}) error {
-	//	ss, err := syncer.New(&cc.ComponentConfig,
-	//		cc.VirtualClusterClient,
-	//		cc.VirtualClusterInformer,
-	//		cc.MetaClusterClient,
-	//		cc.SuperClusterClient,
-	//		cc.SuperClusterInformerFactory,
-	//		cc.Recorder)
+	b, err := benchmark.New(cc.ClusterClient, cc.Recorder)
 
-	//	if err != nil {
-	//		return fmt.Errorf("new syncer: %v", err)
-	//	}
+	if err != nil {
+		return fmt.Errorf("new syncer: %v", err)
+	}
 
 	// Prepare the event broadcaster.
 	if cc.Broadcaster != nil && cc.ClusterClient != nil {
@@ -98,7 +93,7 @@ func Run(cc *benchconfig.CompletedConfig, stopCh <-chan struct{}) error {
 	defer cancel()
 
 	// Prepare a reusable runCommand function.
-	//	run := startSyncer(ss, stopCh)
+	run := startBenchmark(b, stopCh)
 
 	go func() {
 		select {
@@ -120,18 +115,13 @@ func Run(cc *benchconfig.CompletedConfig, stopCh <-chan struct{}) error {
 		klog.Fatal(http.ListenAndServe(":8080", mux))
 	}()
 
-	//	go func() {
-	//		ss.ListenAndServe(net.JoinHostPort(cc.Address, cc.Port), cc.CertFile, cc.KeyFile)
-	//	}()
-
-	// Leader election is disabled, so runCommand inline until done.
-	//	run(ctx)
+	run(ctx)
 	return fmt.Errorf("finished without leader elect")
 }
 
-//func startSyncer(s syncer.Bootstrap, stopCh <-chan struct{}) func(context.Context) {
-//	return func(ctx context.Context) {
-//		s.Run(stopCh)
-//		<-ctx.Done()
-//	}
-//}
+func startBenchmark(b *benchmark.Benchmark, stopCh <-chan struct{}) func(context.Context) {
+	return func(ctx context.Context) {
+		b.Run(stopCh)
+		<-ctx.Done()
+	}
+}
