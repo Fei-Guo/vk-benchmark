@@ -1,5 +1,8 @@
 # Start from latest golang base image
-FROM golang:latest as builder
+FROM --platform=$BUILDPLATFORM golang:latest as builder
+
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
 # Set the current directory inside the container
 WORKDIR /app
@@ -19,7 +22,7 @@ RUN go mod tidy
 RUN make
 
 ###### Start a new stage from scratch #######
-FROM ubuntu:latest
+FROM --platform=$BUILDPLATFORM ubuntu:latest
 
 WORKDIR /
 
